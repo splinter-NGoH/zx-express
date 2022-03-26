@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=zx_express_management
+POSTGRES_USER=NIKtdXmbRVXnyUCfKRbnIdKijGoGcOTS
+POSTGRES_PASSWORD=q5cXo9SlB1jbp2te6zicFndr2HdSEroEai5YKmPhQLQRbArLpXRb1QHc3JiCyLoR
