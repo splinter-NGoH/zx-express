@@ -1,0 +1,12 @@
+{
+  "python.pythonPath": "$C:/zx_express/zx_express_management/env/Scripts/python.exe",
+  "editor.formatOnSave": true,
+  "python.linting.pycodestyleEnabled": true,
+  "python.linting.pycodestyleArgs": [
+    "--ignore=E501"
+  ],
+  "files.exclude": {
+    "**/*.pyc": true
+  },
+  "python.formatting.provider": "black"
+}

@@ -1,4 +1,3 @@
-from unicodedata import name
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.decorators import action
@@ -9,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer
-from .serializers import AuthTokenSerializer 
+from .serializers import AuthTokenSerializer
 from django.contrib.auth.models import Group
 
 
@@ -31,25 +30,29 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
-
 class CustomAuthToken(ObtainAuthToken):
-
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         user_group = Group.objects.get(user=user)
         token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'username': user.username,
-            'role': str(user_group),
-        })
+        return Response(
+            {
+                "token": token.key,
+                "user_id": user.pk,
+                "username": user.username,
+                "role": str(user_group),
+            }
+        )
 
 
-class Logout_Delete_Token (APIView):
+class Logout_Delete_Token(APIView):
     def post(self, request):
         request.user.auth_token.delete()
-        return Response({"Loged Out": "Token has been deleted successfully"} ,status=status.HTTP_200_OK)
+        return Response(
+            {"Loged Out": "Token has been deleted successfully"},
+            status=status.HTTP_200_OK,
+        )

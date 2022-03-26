@@ -44,7 +44,7 @@ DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # DATABASES = {
 #     "default": {
-        
+
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
 #         'NAME': 'postgres',
@@ -288,7 +288,9 @@ ACCOUNT_FORMS = {"signup": "zx_express_management.users.forms.UserSignupForm"}
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 SOCIALACCOUNT_ADAPTER = "zx_express_management.users.adapters.SocialAccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/forms.html
-SOCIALACCOUNT_FORMS = {"signup": "zx_express_management.users.forms.UserSocialSignupForm"}
+SOCIALACCOUNT_FORMS = {
+    "signup": "zx_express_management.users.forms.UserSocialSignupForm"
+}
 
 # django-rest-framework
 # -------------------------------------------------------------------------------
