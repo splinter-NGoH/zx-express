@@ -86,8 +86,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Returns the short name for the user."
         return self.first_name
 
-    def email_user(self, subject, message, from_email=None):
-        """
-        Sends an email to this User.
-        """
-        send_mail(subject, message, from_email, [self.email])
+    # def email_user(self, subject, message, from_email=None):
+    #     """
+    #     Sends an email to this User.
+    #     """
+    #     send_mail(subject, message, from_email, [self.email])
