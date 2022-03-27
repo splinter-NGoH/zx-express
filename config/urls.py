@@ -25,6 +25,7 @@ urlpatterns = [
 urlpatterns += [
     # API base url
     path("api/", include("config.api_router")),
+    path("api/", include("zx_express_management.drivers.api.urls")),
     # DRF auth token
     path("auth-token/", include("zx_express_management.users.api.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),

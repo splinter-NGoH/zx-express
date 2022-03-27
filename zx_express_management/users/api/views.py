@@ -8,9 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer
-from .serializers import AuthTokenSerializer
+from .serializers import UserRegistrationSerializer
 from django.contrib.auth.models import Group
-
+from rest_framework.permissions import IsAdminUser
 
 User = get_user_model()
 
@@ -56,3 +56,19 @@ class Logout_Delete_Token(APIView):
             {"Loged Out": "Token has been deleted successfully"},
             status=status.HTTP_200_OK,
         )
+
+
+class SignupAccount(APIView):
+    permission_classes = [
+        IsAdminUser,
+    ]
+
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        else:
+            data = serializer.errors
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)

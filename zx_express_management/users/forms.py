@@ -13,7 +13,6 @@ class UserAdminChangeForm(admin_forms.UserChangeForm):
     #     super(UserAdminChangeForm, self).__init__(*args, **kargs)
     #     del self.fields['email']
 
-
     class Meta(admin_forms.UserChangeForm.Meta):
         model = User
 
@@ -23,6 +22,7 @@ class UserAdminCreationForm(admin_forms.UserCreationForm):
     Form for User Creation in the Admin Area.
     To change user signup, see UserSignupForm and UserSocialSignupForm.
     """
+
     # def __init__(self, *args, **kargs):
     #     super(UserAdminCreationForm, self).__init__(*args, **kargs)
     #     del self.fields['username']
