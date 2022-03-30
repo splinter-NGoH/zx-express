@@ -1,21 +1,33 @@
 from django.urls import path
+from .views import CreateDriver
 
-from .views import Add_driver_to_user, Truck_type_name, TruckInfo_name
 
 urlpatterns = [
     path(
-        "drivers/truck_type_name/",
-        Truck_type_name.as_view(),
-        name="truck_type_name",
+        "createdriverget/",
+        CreateDriver.as_view(
+            {
+                "get": "list",
+            }
+        ),
+        name="create",
     ),
     path(
-        "drivers/TruckInfo_name/",
-        TruckInfo_name.as_view(),
-        name="TruckInfo_name",
+        "createdriver/",
+        CreateDriver.as_view(
+            {
+                "post": "create",
+            }
+        ),
+        name="createdriver",
     ),
     path(
-        "drivers/",
-        Add_driver_to_user.as_view(),
-        name="drivers",
+        "createdriverretrieve/<int:pk>/",
+        CreateDriver.as_view(
+            {
+                "get": "retrieve",
+            }
+        ),
+        name="retrieve",
     ),
 ]

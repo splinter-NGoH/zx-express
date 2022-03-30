@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.contrib.auth.models import Group
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Group
+from zx_express_management.drivers.api.serializers import CompanyDriversSerializer
 
 User = get_user_model()
 
@@ -17,10 +16,11 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True)
+    driver = CompanyDriversSerializer(read_only=True)
 
     class Meta:
         model = User
-        fields = ["username", "url", "groups"]
+        fields = ["id", "driver", "username", "url", "groups"]
 
         extra_kwargs = {
             "url": {"view_name": "api:user-detail", "lookup_field": "username"}

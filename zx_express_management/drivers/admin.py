@@ -1,68 +1,56 @@
 from django.contrib import admin
-from .models import TruckType, TruckInfo, Drivers, DriverNotes, TrailersToGo
+from .models import Drivers, DriverNotes, TrailersToGo, DriverTrucks
 
 
-class TruckTypeAdmin(admin.ModelAdmin):
+class DriverTrucksAdmin(admin.ModelAdmin):
     list_display = [
+        "driver",
         "truck_type_name",
+        "truck_number",
+        "trailer_number",
+        "refeer",
+        "active",
         "created_at",
         "updated_at",
     ]
     search_fields = [
         "truck_type_name",
-        "created_at",
+        "truck_number",
+        "trailer_number",
+        "refeer",
+        "active",
     ]
     filter_fields = [
         "truck_type_name",
-        "created_at",
-    ]
-
-
-admin.site.register(TruckType, TruckTypeAdmin)
-
-
-class TruckInfoAdmin(admin.ModelAdmin):
-    list_display = [
         "truck_number",
         "trailer_number",
         "refeer",
-        "created_at",
-        "updated_at",
-    ]
-    search_fields = [
-        "truck_number",
-        "trailer_number",
-        "refeer",
-        "created_at",
-    ]
-    filter_fields = [
-        "truck_number",
-        "trailer_number",
-        "refeer",
+        "active",
         "created_at",
     ]
 
 
-admin.site.register(TruckInfo, TruckInfoAdmin)
+admin.site.register(DriverTrucks, DriverTrucksAdmin)
 
 
 class DriversAdmin(admin.ModelAdmin):
     list_display = [
         "user",
-        "truck_type",
-        "truck_info",
         "full_name",
         "phone_number",
+        "birthdate",
         "created_at",
         "updated_at",
     ]
     search_fields = [
         "full_name",
         "phone_number",
+        "birthdate",
     ]
     filter_fields = [
         "full_name",
         "phone_number",
+        "birthdate",
         "created_at",
         "updated_at",
     ]
@@ -74,7 +62,6 @@ admin.site.register(Drivers, DriversAdmin)
 class DriverNotesAdmin(admin.ModelAdmin):
     list_display = [
         "driver",
-        "noted_by",
         "title",
         "note_content",
         "created_at",
@@ -99,7 +86,7 @@ class TrailersToGoAdmin(admin.ModelAdmin):
     list_display = [
         "driver",
         "asked",
-        "place",
+        "emptyplace",
         "prefered_destination",
         "from_date",
         "to_date",
@@ -111,7 +98,7 @@ class TrailersToGoAdmin(admin.ModelAdmin):
     ]
     search_fields = [
         "asked",
-        "place",
+        "emptyplace",
         "prefered_destination",
         "from_date",
         "to_date",
@@ -123,7 +110,7 @@ class TrailersToGoAdmin(admin.ModelAdmin):
     ]
     filter_fields = [
         "asked",
-        "place",
+        "emptyplace",
         "prefered_destination",
         "from_date",
         "to_date",

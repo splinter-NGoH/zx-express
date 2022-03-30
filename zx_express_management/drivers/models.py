@@ -1,45 +1,31 @@
+from gettext import NullTranslations
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
+from zx_express_management.dispatchers.models import DispatcherProfile
+
 
 User = get_user_model()
 
 
-class TruckType(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-    )
-    truck_type_name = models.CharField(max_length=254, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class TruckInfo(models.Model):
+#     user = models.OneToOneField(
+#         User,
+#         on_delete=models.CASCADE,
+#     )
+#     truck_number = models.BigIntegerField(unique=True)
+#     trailer_number = models.BigIntegerField(unique=True)
+#     refeer = models.CharField(max_length=254)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        verbose_name = _("Truck type")
-        verbose_name_plural = _("Truck types")
+#     class Meta:
+#         verbose_name = _("Truck Info")
+#         verbose_name_plural = _("Trucks Info")
 
-    def __str__(self):
-        return self.truck_type_name
-
-
-class TruckInfo(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-    )
-    truck_number = models.BigIntegerField(unique=True)
-    trailer_number = models.BigIntegerField(unique=True)
-    refeer = models.CharField(max_length=254)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = _("Truck Info")
-        verbose_name_plural = _("Trucks Info")
-
-    def __str__(self):
-        return str(self.truck_number)
+#     def __str__(self):
+#         return str(self.truck_number)
 
 
 class Drivers(models.Model):
@@ -47,11 +33,13 @@ class Drivers(models.Model):
         User,
         on_delete=models.CASCADE,
     )
-    truck_type = models.ForeignKey(
-        TruckType,
-        on_delete=models.CASCADE,
+    dispatchers = models.ForeignKey(
+        DispatcherProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="drivers_with_dispatcher",
     )
-    truck_info = models.OneToOneField(TruckInfo, on_delete=models.CASCADE)
+
     full_name = models.CharField(max_length=254)
     phone_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",
@@ -60,6 +48,7 @@ class Drivers(models.Model):
     phone_number = models.CharField(
         validators=[phone_regex], max_length=17, blank=True
     )  # Validators should be a list
+    birthdate = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,9 +60,30 @@ class Drivers(models.Model):
         return self.full_name
 
 
+class DriverTrucks(models.Model):
+    driver = models.ForeignKey(
+        Drivers, on_delete=models.CASCADE, related_name="truckinfo"
+    )
+    truck_type_name = models.CharField(max_length=254, blank=True)
+    truck_number = models.BigIntegerField(blank=True)
+    trailer_number = models.BigIntegerField(blank=True)
+    refeer = models.CharField(max_length=254, blank=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Truck type")
+        verbose_name_plural = _("Truck types")
+
+    def __str__(self):
+        return self.truck_type_name
+
+
 class DriverNotes(models.Model):
-    driver = models.ForeignKey(Drivers, on_delete=models.CASCADE)
-    noted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    driver = models.ForeignKey(
+        Drivers, on_delete=models.CASCADE, related_name="notes_on_driver"
+    )
     title = models.CharField(max_length=245, blank=True)
     note_content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -102,11 +112,10 @@ class DriverNotes(models.Model):
 
 class TrailersToGo(models.Model):
     driver = models.ForeignKey(
-        Drivers,
-        on_delete=models.CASCADE,
+        Drivers, on_delete=models.CASCADE, related_name="trailers_to_go"
     )
     asked = models.BooleanField(default=False)
-    place = models.CharField(max_length=254)
+    emptyplace = models.CharField(max_length=254, blank=True)
     prefered_destination = models.CharField(max_length=254, blank=True)
     from_date = models.DateTimeField(blank=True)
     to_date = models.DateTimeField(blank=True)

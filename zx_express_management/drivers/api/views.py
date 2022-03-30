@@ -1,90 +1,59 @@
 from django.db import IntegrityError
-from .serializers import DriversService, TruckInfoSerializer, TruckTypeSerializer
-from rest_framework import generics, status
+from .serializers import (
+    CompanyDriversSerializer,
+    TruckInfoSerializer,
+    TrailersToGoSerializer,
+)
+from rest_framework import generics, status, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from zx_express_management.drivers.models import Drivers, TruckInfo, TruckType
+from django.shortcuts import get_object_or_404
+from zx_express_management.users.api.serializers import UserSerializer
+from django.db.models import Q
+from zx_express_management.drivers.models import (
+    Drivers,
+    DriverTrucks,
+    DriverNotes,
+    TrailersToGo,
+)
+from .pagination import AnnouncementPagination
+
 
 User = get_user_model()
 
 
-class Truck_type_name(APIView):
-    permission_classes = [IsAdminUser]
-
-    def get(self, request):
-        drivers = TruckType.objects.all()
-        serializer = TruckTypeSerializer(
-            drivers,
-            many=True,
-        )
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = TruckTypeSerializer(data=request.data)
-        try:
-            if serializer.is_valid():
-                serializer.save(user=request.user)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except IntegrityError:
-            return Response(
-                {"IntegrityError": "cant add more than 1 value for each user"},
-            )
+class TruckAndDriverInfo(viewsets.ModelViewSet):
+    pagination_class = AnnouncementPagination
+    serializer_class = CompanyDriversSerializer
+    queryset = Drivers.objects.all().order_by("-created_at")
 
 
-class TruckInfo_name(APIView):
-    permission_classes = [IsAdminUser]
+class TrailersToGoClass(viewsets.ModelViewSet):
+    pagination_class = AnnouncementPagination
+    serializer_class = TrailersToGoSerializer
+    queryset = TrailersToGo.objects.all().order_by("-created_at")
 
-    def get(self, request):
-        drivers = TruckInfo.objects.all()
-        serializer = TruckInfoSerializer(
-            drivers,
-            many=True,
-        )
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = TruckInfoSerializer(data=request.data)
-        try:
-            if serializer.is_valid():
-                serializer.save(user=request.user)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except IntegrityError:
-            return Response(
-                {"IntegrityError": "cant add more than 1 value for each user"},
-            )
+    def create(self, request):
+        serializer = TrailersToGoSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class Add_driver_to_user(APIView):
-    permission_classes = [IsAdminUser]
+class CreateDriver(viewsets.ModelViewSet):
+    pagination_class = AnnouncementPagination
+    drivers = Drivers.objects.all().values_list("user", flat=True)
+    queryset = (
+        User.objects.filter(groups__name="driver")
+        .exclude(Q(id__in=drivers))
+        .order_by("-id")
+    )
+    serializer_class = UserSerializer
 
-    def get(self, request):
-        drivers = Drivers.objects.all()
-        serializer = DriversService(
-            drivers,
-            many=True,
-        )
-        return Response(serializer.data)
-
-    def post(self, request):
-        truck_type = TruckType.objects.get(user=request.user)
-        truck_info = TruckInfo.objects.get(user=request.user)
-        serializer = DriversService(data=request.data)
-        try:
-            if serializer.is_valid():
-                serializer.save(
-                    user=request.user, truck_type=truck_type, truck_info=truck_info
-                )
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except IntegrityError:
-            return Response(
-                {"IntegrityError": "cant add more than 1 value for each user"},
-            )
+    def create(self, request):
+        serializer = CompanyDriversSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
