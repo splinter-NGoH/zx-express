@@ -11,6 +11,8 @@ from .serializers import UserSerializer
 from .serializers import UserRegistrationSerializer
 from django.contrib.auth.models import Group
 from rest_framework.permissions import IsAdminUser
+from django.shortcuts import get_object_or_404
+from zx_express_management.drivers.models import Drivers
 
 User = get_user_model()
 
@@ -38,12 +40,14 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
         user_group = Group.objects.get(user=user)
+        driver = get_object_or_404(Drivers, user=user)
         token, created = Token.objects.get_or_create(user=user)
         return Response(
             {
                 "token": token.key,
                 "user_id": user.pk,
                 "username": user.username,
+                "driver_id": driver.pk,
                 "role": str(user_group),
             }
         )

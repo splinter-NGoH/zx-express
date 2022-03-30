@@ -35,6 +35,13 @@ class TrailersToGoClass(viewsets.ModelViewSet):
     serializer_class = TrailersToGoSerializer
     queryset = TrailersToGo.objects.all().order_by("-created_at")
 
+    def list(self, request):
+        driver = Drivers.objects.get(user=request.user)
+        queryset = TrailersToGo.objects.filter(driver=driver).order_by("-created_at")
+
+        serializer = TrailersToGoSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request):
         serializer = TrailersToGoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
