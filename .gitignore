@@ -275,4 +275,3 @@ zx_express_management/media/
 .ipython/
 .env
 .envs/*
-!.envs/.local/
